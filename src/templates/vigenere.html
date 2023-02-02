@@ -1,0 +1,17 @@
+{% extends 'home.html' %}
+
+{% block body %}
+<form action="/vigenere" method="POST">
+  <input type="submit" name="vigenereType" value="standard">
+  <input type="submit" name="vigenereType" value="autokey">
+  <input type="submit" name="vigenereType" value="extended">
+</form>
+
+
+
+{% block vigenere %}
+
+{% endblock %}
+
+
+{% endblock %}

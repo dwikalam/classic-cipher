@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Classic Cipher</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+        input {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1>Affine Cipher</h1>
+        <div id=input_section>
+            <form action="/upload/affine" method="POST" enctype="multipart/form-data">
+                <input type="file" name="file" />
+                <input id="inputFile" type="submit" value="Submit" />
+            </form>
+            <input id="plainField" type="text" placeholder="Plain Text" value="{{fileContent}}">
+            <input id="keyM" type="text" , placeholder="Key M">
+            <input id="keyB" type="text" , placeholder="Key B">
+            <input id="cipherField" type="text" placeholder="Cipher Text">
+            <br>
+            <div id="messageArea">
+            </div>
+            <input id="encryptButton" type="submit" value="Encrypt">
+            <input id="decryptButton" type="submit" value="Decrypt">
+            <br>
+        </div>
+        <div class="result"></div>
+        <a href="../">Back</a>
+    </main>
+    <script>
+        $("#encryptButton").click(() => {
+            $("#warningMessage").remove();
+            let plainText = $("#plainField").val();
+            let keyM = $("#keyM").val();
+            let keyB = $("#keyB").val();
+            $.get("/affine/encrypt", { plainText: plainText, keyM: keyM, keyB: keyB }).done(data => {
+                if (data === "primeError") {
+                    $("#messageArea").append("<p id='warningMessage' style='color:red'>Kunci M harus relatif prima terhadap 26</p>")
+                    return;
+                }
+                $(".result").empty()
+                $(".result").append("<h4>Result:</h4>")
+                $(".result").append("<div>Plaintext: " + data.plainText + "</div>")
+                $(".result").append("<div>Key M: " + data.keyM + "</div>")
+                $(".result").append("<div>Key B: " + data.keyB + "</div>")
+                $(".result").append("<div>Ciphertext: <b>" + data.cipherText + " (<i>" + data.arrangedCipherText + "</i>)</b></div>")
+            });
+        })
+        $("#decryptButton").click(() => {
+            $("#warningMessage").remove();
+            let cipherText = $("#cipherField").val();
+            let keyM = $("#keyM").val();
+            let keyB = $("#keyB").val();
+            $.get("/affine/decrypt", { cipherText: cipherText, keyM: keyM, keyB: keyB }).done(data => {
+                if (data === "primeError") {
+                    $("#messageArea").append("<p id='warningMessage' style='color:red'>Kunci M harus relatif prima terhadap 26</p>")
+                    return;
+                }
+                $(".result").empty()
+                $(".result").append("<h4>Result:</h4>")
+                $(".result").append("<div>Ciphertext: " + data.cipherText + "</div>")
+                $(".result").append("<div>Key M: " + data.keyM + "</div>")
+                $(".result").append("<div>Key B: " + data.keyB + "</div>")
+                $(".result").append("<div>Plaintext: <b>" + data.plainText + "</b></div>")
+            });
+        })
+    </script>
+</body>
+
+</html>

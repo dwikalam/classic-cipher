@@ -1,0 +1,78 @@
+{% extends 'vigenere.html' %}
+
+{% block vigenere %}
+
+<h3>Autokey Vigenere</h3>
+
+<div class="container">
+  <form action="/upload-vigenere/autokey" method="POST" enctype="multipart/form-data" class="row w-100">
+    <h6 class="col-3">File Input:</h6>
+    <div class="col">
+      <div class="row">
+        <div class="col">
+          <input type="file" name="file" />
+        </div>
+        <div class="col">
+          <input id="inputFile" type="submit" />
+        </div>
+      </div>
+    </div>
+  </form>
+  <form action="/vigenere/autokey" method="post" class="row w-100">
+    <div class="row">
+      <h6 class="col-3">Text Input:</h6>
+      <div class="col">
+        {% if fileContent != "" %}
+        <div class="w-100 my-2 d-flex justify-content-start">
+          <input type="text" id="plainteks" name="plainteks" placeholder="plainteks" value="{{ fileContent }}">
+        </div>
+        <div class="w-100 my-2 d-flex justify-content-start">
+          <input type="text" id="key" name="key" placeholder="key" value="">
+        </div>
+        <div class="w-100 my-2 d-flex justify-content-start">
+          <input type="text" id="cipherteks" name="cipherteks" placeholder="cipherteks" value="{{ fileContent }}">
+        </div>
+        {% else %}
+        <div class="w-100 my-2 d-flex justify-content-start">
+          <input type="text" id="plainteks" name="plainteks" placeholder="plainteks" value="">
+        </div>
+        <div class="w-100 my-2 d-flex justify-content-start">
+          <input type="text" id="key" name="key" placeholder="key" value="">
+        </div>
+        <div class="w-100 my-2 d-flex justify-content-start">
+          <input type="text" id="cipherteks" name="cipherteks" placeholder="cipherteks" value="">
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="d-flex justify-content-center align-items-center">
+      <input id="btn-encrypt" type="submit" name="enc_dec_mode" value="Encrypt" class="mx-1">
+      <input id="btn-decrypt" type="submit" name="enc_dec_mode" value="Decrypt" class="mx-1">
+    </div>
+  </form>
+  {% if data.formatKey != "" %}
+  {% if encrypt %}
+  <div class="">
+    <h4>Result:</h4>
+    <p>Plaintext: {{ data.formatText }}</p>
+    <p>Key: {{ data.formatKey }}</p>
+    <p>Ciphertext: <b>{{ data.cipherText }} (<i>{{ data.arrangedCipherText }}</i>)</b></p>
+  </div>
+
+  <script>
+    window.onload = function () {
+      alert("Ciphertext saved to ../data/output/autokey-vigenere-cipher.txt")
+    };
+  </script>
+  {% else %}
+  <div class="">
+    <h4>Result:</h4>
+    <p>Ciphertext: {{ data.cipherText }}</p>
+    <p>Key: {{ data.formatKey }}</p>
+    <p>Plaintext: <b>{{ data.decryptedText }}</b></p>
+  </div>
+  {% endif %}
+  {% endif %}
+</div>
+
+{% endblock %}

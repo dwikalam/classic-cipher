@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Classic Cipher</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+        input {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1>Playfair Cipher</h1>
+        <div id=input_section>
+            <form action="/upload/playfair" method="POST" enctype="multipart/form-data">
+                <input type="file" name="file" />
+                <input id="inputFile" type="submit" value="Submit" />
+            </form>
+            <input id="plainField" type="text" placeholder="Plain Text" value="{{ fileContent }}">
+            <input id="keyField" type="text" , placeholder="Key Text">
+            <input id="cipherField" type="text" placeholder="Cipher Text">
+            <br>
+            <input id="encryptButton" type="submit" value="Encrypt">
+            <input id="decryptButton" type="submit" value="Decrypt">
+            <br>
+        </div>
+        <div class="result"></div>
+        <a href="../">Back</a>
+    </main>
+    <script>
+        $("#encryptButton").click(() => {
+            let plainText = $("#plainField").val();
+            let plainKey = $("#keyField").val();
+            $.get("/playfair/encrypt", { plainText: plainText, plainKey: plainKey }).done(data => {
+                $(".result").empty()
+                $(".result").append("<h4>Result:</h4>")
+                $(".result").append("<div>Plaintext: " + data.plainText + "</div>")
+                $(".result").append("<div>Ciphertext: <b>" + data.cipherText + " (<i>" + data.arrangedCipherText + "</i>)</b></div>")
+            });
+        })
+        $("#decryptButton").click(() => {
+            let cipherText = $("#cipherField").val();
+            let plainKey = $("#keyField").val();
+            $.get("/playfair/decrypt", { cipherText: cipherText, plainKey: plainKey }).done(data => {
+                $(".result").empty()
+                $(".result").append("<h4>Result:</h4>")
+                $(".result").append("<div>Ciphertext: " + data.cipherText + "</div>")
+                $(".result").append("<div>Plaintext: <b>" + data.plainText + "</b></div>")
+            });
+        })
+    </script>
+</body>
+
+</html>

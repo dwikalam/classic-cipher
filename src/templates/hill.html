@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Classic Cipher</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+        input {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1>Hill Cipher</h1>
+        <div id=input_section>
+            <form action="/upload/hill" method="POST" enctype="multipart/form-data">
+                <input type="file" name="file" />
+                <input id="inputFile" type="submit" value="Submit" />
+            </form>
+            <input id="plainField" type="text" placeholder="Plain Text" value="{{fileContent}}">
+            <div id="key_section">
+                <input id="sizeField" type="number" min="1" placeholder="Ukuran Kunci">
+                <input id="sizeButton" type="submit" value="Pilih">
+                <div id="keyMatrix"></div>
+            </div>
+            <input id="cipherField" type="text" placeholder="Cipher Text">
+            <br>
+            <input id="encryptButton" type="submit" value="Encrypt" disabled>
+            <input id="decryptButton" type="submit" value="Decrypt" disabled>
+            <br>
+        </div>
+        <div class="result"></div>
+        <a href="../">Back</a>
+    </main>
+    <script>
+        $("#encryptButton").click(() => {
+            let plainText = $("#plainField").val();
+            let size = $("#sizeField").val();
+            let key = [];
+            for (let i = 0; i < size * size; i++) {
+                key[i] = $(`#key-${i}`).val();
+            }
+            let keystr = JSON.stringify(key)
+            $.post("/hill/encrypt", { plainText: plainText, key: keystr, size: size }).done(data => {
+                $(".result").empty()
+                $(".result").append("<h4>Result:</h4>")
+                $(".result").append("<div>Plaintext: " + data.plainText + "</div>")
+                $(".result").append("<div>Ciphertext: <b>" + data.cipherText + " (<i>" + data.arrangedCipherText + "</i>)</b></div>")
+            });
+        })
+        $("#decryptButton").click(() => {
+            let cipherText = $("#cipherField").val();
+            let size = $("#sizeField").val();
+            let key = [];
+            for (let i = 0; i < size * size; i++) {
+                key[i] = $(`#key-${i}`).val();
+            }
+            let keystr = JSON.stringify(key)
+            $.post("/hill/decrypt", { cipherText: cipherText, key: keystr, size: size }).done(data => {
+                $(".result").empty()
+                $(".result").append("<h4>Result:</h4>")
+                $(".result").append("<div>Ciphertext: " + data.cipherText + "</div>")
+                $(".result").append("<div>Plaintext: <b>" + data.plainText + "</b></div>")
+            });
+        })
+        $("#sizeButton").click(() => {
+            $("#keyMatrix").empty()
+            let size = $("#sizeField").val();
+            for (let i = 0; i < size; i++) {
+                let newElmt = ''
+                for (let j = 0; j < size; j++) {
+                    newElmt += `<input class="keyElmt" id="key-${i * size + j}" type="number" min="0" placeholder="K-${i},${j}">`
+                }
+                newElmt += '<br>'
+                $("#keyMatrix").append(newElmt)
+            }
+            let saveButton = '<input id="saveKey" type="submit" value="Save Key">'
+            let updateButton = '<input id="updateKey" type="submit" value="Change Key" disabled>'
+            $("#keyMatrix").append(saveButton, updateButton)
+            $("#saveKey").click(() => {
+                $("#warning").remove()
+                let size = $("#sizeField").val()
+                // check apakah semua kunci sudah terisi
+                for (let i = 0; i < size * size; i++) {
+                    if ($(`#key-${i}`).val() === "") {
+                        $("#keyMatrix").append('<p id="warning" style="color:red">Kunci harus terisi sepenuhnya</p>')
+                        return;
+                    }
+                }
+                // check apakah kunci invertible
+                let key = [];
+                for (let i = 0; i < size * size; i++) {
+                    key[i] = $(`#key-${i}`).val();
+                }
+                let result;
+                let keystr = JSON.stringify(key);
+                $.post("/hill/keycheck", { key: keystr, size: size }).done(data => {
+                    if (data !== "ok") {
+                        $("#keyMatrix").append('<p id="warning" style="color:red">Kunci harus invertible</p>')
+                        return;
+                    }
+                    // update buttons
+                    document.getElementById("sizeButton").setAttribute("disabled", "")
+                    document.getElementById("sizeField").setAttribute("disabled", "")
+                    document.getElementById("saveKey").setAttribute("disabled", "")
+                    for (let i = 0; i < size * size; i++) {
+                        document.getElementById(`key-${i}`).setAttribute("disabled", "")
+                    }
+                    document.getElementById("updateKey").removeAttribute("disabled")
+                    document.getElementById("encryptButton").removeAttribute("disabled")
+                    document.getElementById("decryptButton").removeAttribute("disabled")
+                })
+            })
+            $("#updateKey").click(() => {
+                document.getElementById("sizeButton").removeAttribute("disabled")
+                document.getElementById("sizeField").removeAttribute("disabled")
+                document.getElementById("saveKey").removeAttribute("disabled")
+                for (let i = 0; i < size * size; i++) {
+                    document.getElementById(`key-${i}`).removeAttribute("disabled")
+                }
+                document.getElementById("updateKey").setAttribute("disabled", "")
+                document.getElementById("encryptButton").setAttribute("disabled", "")
+                document.getElementById("decryptButton").setAttribute("disabled", "")
+            })
+        })
+    </script>
+</body>
+
+</html>
