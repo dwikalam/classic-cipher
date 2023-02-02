@@ -1,7 +1,6 @@
 import utilities
 from cipher import standardVigenere as svc
 
-# if __name__ == __main__
 # import sys
 # import standardVigenere as svc
 # sys.path.append("../src")

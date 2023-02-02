@@ -1,4 +1,4 @@
-from cipher import standardVigenere, autoKeyVigenere, extendedVigenere, affine, playfair, hill
+from cipher import standardVigenere, autoKeyVigenere, extendedVigenere, affine, playfair, hill, enigma
 from flask import *
 from werkzeug.utils import secure_filename
 import json
@@ -156,6 +156,26 @@ def hill_decrypt():
 
     return hill.decrypt(cipherText, keyMatrix)
 
+@app.route('/enigma')
+def enigma_page():
+    return render_template("enigma.html")
+
+@app.route('/enigma/encrypt')
+def enigma_encrypt():
+    plainText = request.args.get("plainText")
+    key1 = request.args.get("key1")
+    key2 = request.args.get("key2")
+    key3 = request.args.get("key3")
+    return enigma.encrypt(plainText, key1, key2, key3)
+
+@app.route('/enigma/decrypt')
+def enigma_decrypt():
+    cipherText = request.args.get("cipherText")
+    key1 = request.args.get("key1")
+    key2 = request.args.get("key2")
+    key3 = request.args.get("key3")
+    return enigma.decrypt(cipherText, key1, key2, key3)
+
 @app.route('/upload-vigenere/<vtype>', methods = ['GET', 'POST'])
 def upload_file_vigenere(vtype):
     if request.method == 'POST':
@@ -195,27 +215,3 @@ def upload_file(cipher):
 
 if __name__ == "__main__":
     app.run(debug=True, port=3000)
-
-""""""
-# # Extended Vigenere Cipher
-# extendedVigenere.encrypt("../ioFiles/input/binary-input.bin", "cidmath", "../ioFiles/output/encrypted-extended-vc.bin")
-# extendedVigenere.decrypt("../ioFiles/output/encrypted-extended-vc.bin", "cidmath", "../ioFiles/output/decrypted-extended-vc.bin")
-
-# print("*** Affine Cipher ***")
-# cipherText = affine.encrypt(plainText, 17, 26)
-# decryptedText = affine.decrypt(cipherText, 17, 26)
-# writeText(cipherText, "../ioFiles/output/affine-cipher.txt")
-
-# print("*** Playfair Cipher ***")
-# cipherText = playfair.encrypt(plainText, plainKey)
-# decryptedText = playfair.decrypt(cipherText, plainKey)
-# writeText(cipherText, "../ioFiles/output/playfair-cipher.txt")
-
-# print("*** Hill Cipher ***")
-# keyMatrixSize = int(input("> Enter the number of linear equation (matrix size): "))
-# print("> Enter the entries in a single line (separated by space): ")
-# entries = list(map(int, input().split()))
-# keyMatrix = hill.generateKeyMatrix(entries, keyMatrixSize)
-# cipherText = hill.encrypt(plainText, keyMatrix)
-# decryptedText = hill.decrypt(cipherText, keyMatrix)
-# writeText(cipherText, "../ioFiles/output/hill-cipher.txt")

@@ -15,7 +15,7 @@ def encrypt(plainText: str, keyM: int, keyB: int) -> str:
         return "primeError"
 
     cipherText = ""
-    formatText = plainText.upper()
+    formatText = utilities.formatText(plainText)
     for char in formatText:
         if alphabets.count(char) != 0:
             cipherText += alphabets[(alphabets.index(char) * keyM + keyB) % N]
@@ -40,7 +40,7 @@ def decrypt(cipherText: str, keyM: int, keyB: int) -> str:
         return "primeError"
 
     decryptedText = ""
-    formatCipherText = cipherText.upper()
+    formatCipherText = utilities.formatText(cipherText)
     for char in formatCipherText:
         if alphabets.count(char) != 0 :
             decryptedText += alphabets[((alphabets.index(char) - keyB) * dec) % N]

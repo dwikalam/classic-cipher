@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append("../src")
+# sys.path.append("../src")
 import utilities
 
 alphabets = [chr(65 + i) for i in range(26)]
